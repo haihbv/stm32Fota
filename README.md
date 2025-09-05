@@ -109,26 +109,26 @@ Response đi từ Node về Host bao gồm:
 
 stm32Fota/
 ├── app/ # Firmware và công cụ liên quan
-│ ├── application.bin # Firmware sẵn có
-│ └── Hex_To_Bin/ # Công cụ chuyển đổi HEX sang BIN
-│ ├── application.hex # File hex của ứng dụng
-│ ├── application.exe # Tool chuyển đổi
-│ ├── intel_hex.c # Source code xử lý hex
-│ ├── main.c # Main của tool
-│ └── makefile # Makefile để build tool
+│   ├── application.bin # Firmware sẵn có
+│   └── Hex_To_Bin/ # Công cụ chuyển đổi HEX sang BIN
+│       ├── application.hex # File hex của ứng dụng
+│       ├── application.exe # Tool chuyển đổi
+│       ├── intel_hex.c # Source code xử lý hex
+│       ├── main.c # Main của tool
+│       └── makefile # Makefile để build tool
 ├── hostPC/ # Công cụ host-side (Python)
-│ ├── hostBootloader.py # Main bootloader host
-│ ├── bootloaderDriver.py # Driver bootloader
-│ ├── uartDriver.py # Driver giao tiếp UART
-│ ├── fileHandling.py # Xử lý file firmware
-│ └── utility.py # Tiện ích hỗ trợ (CRC, etc.)
+│   ├── hostBootloader.py # Main bootloader host
+│   ├── bootloaderDriver.py # Driver bootloader
+│   ├── uartDriver.py # Driver giao tiếp UART
+│   ├── fileHandling.py # Xử lý file firmware
+│   └── utility.py # Tiện ích hỗ trợ (CRC, etc.)
 └── nodeMCU/ # Mã nguồn bootloader cho MCU
-├── Core/ # Core firmware
-├── Drivers/ # Drivers phần cứng
-├── flash_driver.c/h # Driver flash memory
-├── uart_driver.c/h # Driver UART
-├── jump_driver.c/h # Driver jump to application
-└── MDK-ARM/ # Project Keil MDK-ARM
+    ├── Core/ # Core firmware
+    ├── Drivers/ # Drivers phần cứng
+    ├── flash_driver.c/h # Driver flash memory
+    ├── uart_driver.c/h # Driver UART
+    ├── jump_driver.c/h # Driver jump to application
+    └── MDK-ARM/ # Project Keil MDK-ARM
 
 ---
 
