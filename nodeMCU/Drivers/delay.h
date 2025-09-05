@@ -8,11 +8,12 @@ extern "C"
 
 #include "stm32f10x.h"
 
-    void Delay_Init(void);
-    void Delay_Ms(uint32_t ms);
-    void Delay_Us(uint32_t us);
-    uint32_t millis(void);
-    void SysTick_Handler(void);
+void Delay_Init(void);
+void Delay_Ms(uint32_t ms);
+void Delay_Us(uint32_t us);
+uint32_t millis(void);
+void SysTick_Handler(void);
+
 
 #ifdef __cplusplus
 }

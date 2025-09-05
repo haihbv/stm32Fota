@@ -3,11 +3,12 @@
 
 #include "stm32f10x.h"
 
-#define FLASH_PAGE_SIZE   1024
-#define FLASH_BASE_ADDR   0x08000000
-#define FLASH_TOTAL_SIZE  (64 * 1024) // 64KB flash
+#define FLASH_PAGE_SIZE 1024
+#define FLASH_BASE_ADDR 0x08000000
+#define FLASH_TOTAL_SIZE (64 * 1024) // 64KB flash
 
-typedef enum {
+typedef enum
+{
     FLASH_OP_OK = 0,
     FLASH_OP_ERROR,
     FLASH_OP_ADDR_INVALID

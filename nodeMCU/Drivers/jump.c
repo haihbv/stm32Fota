@@ -18,8 +18,8 @@ void Jump_To_Application(void)
   pFunction app_entry;
 
   /* Doc MSP va Reset_Handler tu vector table cua App */
-  app_msp   = *(__IO uint32_t*)(APP_ADDRESS);
-  app_reset = *(__IO uint32_t*)(APP_ADDRESS + 4U);
+  app_msp = *(__IO uint32_t *)(APP_ADDRESS);
+  app_reset = *(__IO uint32_t *)(APP_ADDRESS + 4U);
 
   /* Kiem tra MSP co hop le khong (co tro vao SRAM) */
   if ((app_msp & 0x2FFE0000U) != 0x20000000U)
@@ -31,13 +31,13 @@ void Jump_To_Application(void)
   __disable_irq();
   SysTick->CTRL = 0;
   SysTick->LOAD = 0;
-  SysTick->VAL  = 0;
+  SysTick->VAL = 0;
   RCC_DeInit();
 
   /* Reset tat ca peripheral */
-  RCC->APB1RSTR = 0xFFFFFFFFU; 
+  RCC->APB1RSTR = 0xFFFFFFFFU;
   RCC->APB1RSTR = 0;
-  RCC->APB2RSTR = 0xFFFFFFFFU; 
+  RCC->APB2RSTR = 0xFFFFFFFFU;
   RCC->APB2RSTR = 0;
 
   /* Clear cac co bao loi trong SCB */
@@ -53,6 +53,6 @@ void Jump_To_Application(void)
 
   /* Goi Reset_Handler cua App */
   app_entry = (pFunction)app_reset;
-  __enable_irq();    /* Bat lai ngat cho App hoat dong */
-  app_entry();       /* Thuc thi Application */
+  __enable_irq(); /* Bat lai ngat cho App hoat dong */
+  app_entry();    /* Thuc thi Application */
 }

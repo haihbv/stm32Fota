@@ -1,14 +1,14 @@
 #include "main.h"
 
-#define FLASH_PAGE_SIZE 1024 // STM32F103C8: 1KB/page; high-density STM32F1: 2KB/page
-#define FLASH_BASE_ADDR 0x08000000
-#define FLASH_TOTAL_SIZE (64 * 1024) // 64KB flash
+#define FLASH_PAGE_SIZE 1024		 ///< STM32F103C8: 1KB/page; high-density STM32F1: 2KB/page
+#define FLASH_BASE_ADDR 0x08000000	 ///< Dia chi bat dau Flash
+#define FLASH_TOTAL_SIZE (64 * 1024) ///< 64KB flash
 
 /**
- * @brief   Xóa toàn bộ vùng Flash từ startAddr với độ dài size
- * @param   startAddr   địa chỉ bắt đầu (phải thuộc vùng flash)
- * @param   size        số byte cần xóa
- * @retval  FlashStatus
+ * @brief   Xoa toan bo vung Flash tu startAddr voi do dai size
+ * @param   startAddr   Dia chi bat dau xoa (phai thuoc vung Flash)
+ * @param   size        So byte can xoa
+ * @retval  FlashStatus FLASH_OP_OK / FLASH_OP_ERROR / FLASH_OP_ADDR_INVALID
  */
 FlashStatus Flash_Erase(uint32_t startAddr, uint32_t size)
 {
@@ -40,11 +40,11 @@ FlashStatus Flash_Erase(uint32_t startAddr, uint32_t size)
 }
 
 /**
- * @brief   Ghi dữ liệu vào Flash
- * @param   addr    địa chỉ flash cần ghi (phải chẵn)
- * @param   data    buffer dữ liệu
- * @param   len     số byte cần ghi
- * @retval  FlashStatus
+ * @brief   Ghi du lieu vao Flash
+ * @param   addr    Dia chi Flash can ghi (phai chan)
+ * @param   data    Buffer du lieu can ghi
+ * @param   len     So byte can ghi
+ * @retval  FlashStatus FLASH_OP_OK / FLASH_OP_ERROR / FLASH_OP_ADDR_INVALID
  */
 FlashStatus Flash_Write(uint32_t addr, uint8_t *data, uint16_t len)
 {
@@ -85,10 +85,10 @@ FlashStatus Flash_Write(uint32_t addr, uint8_t *data, uint16_t len)
 }
 
 /**
- * @brief   Đọc dữ liệu từ Flash vào buffer
- * @param   addr    địa chỉ flash
- * @param   buf     buffer đích
- * @param   len     số byte cần đọc
+ * @brief   Doc du lieu tu Flash vao buffer
+ * @param   addr    Dia chi Flash bat dau doc
+ * @param   buf     Buffer dich
+ * @param   len     So byte can doc
  */
 void Flash_ReadBuffer(uint32_t addr, uint8_t *buf, uint16_t len)
 {

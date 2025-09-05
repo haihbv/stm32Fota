@@ -1,6 +1,12 @@
 #include "bl_cmd.h"
 #include <string.h>
 
+/**
+ * @brief   Tinh checksum don gian (mod 256) cho goi du lieu
+ * @param   data    Con tro du lieu
+ * @param   len     Do dai du lieu
+ * @retval  Checksum (1 byte)
+ */
 static uint8_t calc_checksum(uint8_t *data, uint16_t len)
 {
     uint16_t sum = 0;
@@ -11,16 +17,39 @@ static uint8_t calc_checksum(uint8_t *data, uint16_t len)
     return (uint8_t)(sum & 0xFF);
 }
 
+/**
+ * @brief   Gui ACK (0x79) ve PC
+ */
 void BL_SendACK(void)
 {
     USART_SendChar(CMD_ACK);
 }
 
+/**
+ * @brief   Gui NACK (0x1F) ve PC
+ */
 void BL_SendNACK(void)
 {
     USART_SendChar(CMD_NACK);
 }
 
+/**
+ * @brief   Xu ly goi lenh nhan duoc tu PC
+ * @param   rx_buf  Con tro den buffer nhan
+ * @param   len     Do dai buffer nhan
+ *
+ * @note    Go bao gom: [CMD][LEN][PAYLOAD][CHECKSUM]
+ *          - CMD: ma lenh
+ *          - LEN: do dai payload
+ *          - PAYLOAD: du lieu kem theo
+ *          - CHECKSUM: checksum 1 byte
+ *
+ *          Lenh ho tro:
+ *          - CMD_ERASE: xoa vung flash
+ *          - CMD_WRITE: ghi du lieu flash
+ *          - CMD_VERIFY: kiem tra checksum app
+ *          - CMD_JUMP: nhay vao application
+ */
 void BL_ProcessCommand(uint8_t *rx_buf, uint16_t len)
 {
     if (len < 3)
@@ -117,7 +146,7 @@ void BL_ProcessCommand(uint8_t *rx_buf, uint16_t len)
     case CMD_JUMP:
     {
         BL_SendACK();
-        Delay_Ms(10);
+        Delay_Ms(10); // doi 1 chut truoc khi nhay
         Jump_To_Application();
         break;
     }

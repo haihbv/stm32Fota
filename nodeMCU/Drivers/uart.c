@@ -3,39 +3,47 @@
 
 static USART_TypeDef *pUSARTx = USART1; // default USART1
 
-#define RX_BUF_SIZE 2048 /* enlarged to hold up to one full 1K YMODEM packet plus latency */
+#define RX_BUF_SIZE 2048
 static volatile char rx_buffer[RX_BUF_SIZE];
-static volatile uint16_t rx_head = 0;
-static volatile uint16_t rx_tail = 0;
+static volatile uint16_t rx_head = 0; // vi tri ghi tiep theo
+static volatile uint16_t rx_tail = 0; // vi ti doc tiep theo
 
+/**
+ * @brief   Chon USART muon su dung (USART1/USART2)
+ * @param   USARTx   Con tro USART
+ */
 void USART_Select(USART_TypeDef *USARTx)
 {
     pUSARTx = USARTx;
 }
 
+/**
+ * @brief   Cau hinh UART voi baudrate nhap vao
+ * @param   baudrate    Toc do baud
+ */
 void USART_Setup(uint32_t baudrate)
 {
-    GPIO_InitTypeDef gpio = {0};
-    USART_InitTypeDef usart = {0};
-    NVIC_InitTypeDef nvic = {0};
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    USART_InitTypeDef USART_InitStruct = {0};
+    NVIC_InitTypeDef NVIC_InitStruct = {0};
 
     if (pUSARTx == USART1)
     {
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_USART1, ENABLE);
 
         // PA9 - TX
-        gpio.GPIO_Mode = GPIO_Mode_AF_PP;
-        gpio.GPIO_Pin = GPIO_Pin_9;
-        gpio.GPIO_Speed = GPIO_Speed_50MHz;
-        GPIO_Init(GPIOA, &gpio);
+        GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
+        GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9;
+        GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+        GPIO_Init(GPIOA, &GPIO_InitStruct);
 
         // PA10 - RX
-        gpio.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-        gpio.GPIO_Pin = GPIO_Pin_10;
-        GPIO_Init(GPIOA, &gpio);
+        GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+        GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10;
+        GPIO_Init(GPIOA, &GPIO_InitStruct);
 
         // NVIC
-        nvic.NVIC_IRQChannel = USART1_IRQn;
+        NVIC_InitStruct.NVIC_IRQChannel = USART1_IRQn;
     }
     else if (pUSARTx == USART2)
     {
@@ -43,39 +51,43 @@ void USART_Setup(uint32_t baudrate)
         RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
 
         // PA2 - TX
-        gpio.GPIO_Mode = GPIO_Mode_AF_PP;
-        gpio.GPIO_Pin = GPIO_Pin_2;
-        gpio.GPIO_Speed = GPIO_Speed_50MHz;
-        GPIO_Init(GPIOA, &gpio);
+        GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
+        GPIO_InitStruct.GPIO_Pin = GPIO_Pin_2;
+        GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+        GPIO_Init(GPIOA, &GPIO_InitStruct);
 
         // PA3 - RX
-        gpio.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-        gpio.GPIO_Pin = GPIO_Pin_3;
-        GPIO_Init(GPIOA, &gpio);
+        GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+        GPIO_InitStruct.GPIO_Pin = GPIO_Pin_3;
+        GPIO_Init(GPIOA, &GPIO_InitStruct);
 
         // NVIC
-        nvic.NVIC_IRQChannel = USART2_IRQn;
+        NVIC_InitStruct.NVIC_IRQChannel = USART2_IRQn;
     }
 
-    usart.USART_BaudRate = baudrate;
-    usart.USART_WordLength = USART_WordLength_8b;
-    usart.USART_StopBits = USART_StopBits_1;
-    usart.USART_Parity = USART_Parity_No;
-    usart.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-    usart.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-    USART_Init(pUSARTx, &usart);
+    USART_InitStruct.USART_BaudRate = baudrate;
+    USART_InitStruct.USART_WordLength = USART_WordLength_8b;
+    USART_InitStruct.USART_StopBits = USART_StopBits_1;
+    USART_InitStruct.USART_Parity = USART_Parity_No;
+    USART_InitStruct.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+    USART_InitStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_Init(pUSARTx, &USART_InitStruct);
     USART_Cmd(pUSARTx, ENABLE);
 
     // Enable RX interrupt
     USART_ITConfig(pUSARTx, USART_IT_RXNE, ENABLE);
 
     // Enable NVIC
-    nvic.NVIC_IRQChannelPreemptionPriority = 0;
-    nvic.NVIC_IRQChannelSubPriority = 0;
-    nvic.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&nvic);
+    NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0;
+    NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStruct);
 }
 
+/**
+ * @brief   Gui 1 ky tu qua UART
+ * @param   c   Ky tu
+ */
 void USART_SendChar(char c)
 {
     while (USART_GetFlagStatus(pUSARTx, USART_FLAG_TXE) == RESET)
@@ -83,6 +95,10 @@ void USART_SendChar(char c)
     USART_SendData(pUSARTx, c);
 }
 
+/**
+ * @brief   Gui chuoi ky tu qua UART
+ * @param   str Chuoi ky tu
+ */
 void USART_SendString(const char *str)
 {
     while (*str)
@@ -91,12 +107,19 @@ void USART_SendString(const char *str)
     }
 }
 
-// Non-blocking UART
+/**
+ * @brief   Kiem tra co byte san trong buffer RX
+ * @retval  1 neu co byte, 0 neu khong
+ */
 int USART_Available(void)
 {
     return (rx_head != rx_tail);
 }
 
+/**
+ * @brief   Lay 1 byte tu buffer RX
+ * @retval  Ky tu tu buffer RX
+ */
 char USART_GetChar(void)
 {
     if (rx_head == rx_tail)
@@ -107,7 +130,12 @@ char USART_GetChar(void)
     return c;
 }
 
-/* Doc 1 byte voi timeout (ms) */
+/**
+ * @brief   Doc 1 byte voi timeout
+ * @param   ch      Con tro nhan byte
+ * @param   timeout Thoi gian timeout (ms)
+ * @retval  1 neu co byte, 0 neu timeout
+ */
 uint8_t USART_ReadByteTimeout(uint8_t *ch, uint32_t timeout)
 {
     uint32_t start = millis();
@@ -123,7 +151,9 @@ uint8_t USART_ReadByteTimeout(uint8_t *ch, uint32_t timeout)
     return 1;
 }
 
-// Interrupt handlers
+/**
+ * @brief   USART1 interrupt: doc byte vao buffer RX
+ */
 void USART1_IRQHandler(void)
 {
     if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
@@ -138,6 +168,9 @@ void USART1_IRQHandler(void)
     }
 }
 
+/**
+ * @brief   USART2 interrupt: doc byte vao buffer RX
+ */
 void USART2_IRQHandler(void)
 {
     if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
@@ -152,59 +185,52 @@ void USART2_IRQHandler(void)
     }
 }
 
+/**
+ * @brief   Stub cho system exit (khong su dung tren STM32)
+ * @param   x   Ma thoat (khong su dung)
+ */
+__attribute__((noreturn, unused)) static void _sys_exit(int x)
+{
+    (void)x;
+    while (1)
+        ;
+}
 
-/* ----------- printf redirect ------------ */
 #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
 
 FILE __stdout;
 
-/****************************************************************************************
- * @brief   Ham stub cho system exit
- * 
- * Ham nay duoc yeu cau boi thu vien C chuan. Tren he thong desktop, no thuong dung de 
- * ket thuc chuong trinh va tra ve ma thoat cho he dieu hanh. Tuy nhien tren he thong 
- * nhung (nhu STM32 hoac cac MCU khac) thi khong co he dieu hanh de tra ve.
- * 
- * Do do ham nay chi duoc cai dat nhu mot stub de thoa man linker. Tham so 'x' khong duoc 
- * su dung, chi giu lai de phu hop voi prototype can thiet.
- * 
- * @param   x   Ma thoat (khong su dung trong he thong nhung)
- * 
- * @note    Ham nay khong nen duoc goi truc tiep boi code nguoi dung. No chi duoc goi 
- *          noi bo neu su dung ham 'exit()'.
- ****************************************************************************************/
-__attribute__((noreturn, unused)) static void _sys_exit(int x)
-{
-    (void)x;   /* Tranh canh bao unused parameter */
-
-    /* Vong lap vo han de dung chuong trinh, cho reset */
-    while (1) {
-        /* Khong lam gi ca */
-    }
-}
-
+/**
+ * @brief   Redirect printf -> UART
+ */
 PUTCHAR_PROTOTYPE
 {
-	(void)f;
-	
-	if (ch == '\n')
-	{
-		USART_SendData(pUSARTx, '\r');
-		while (USART_GetFlagStatus(pUSARTx, USART_FLAG_TXE) == RESET);
-	}
-	USART_SendData(pUSARTx, (uint8_t)ch);
-	while (USART_GetFlagStatus(pUSARTx, USART_FLAG_TXE) == RESET);
-	
-	return ch;
+    (void)f;
+
+    if (ch == '\n')
+    {
+        USART_SendData(pUSARTx, '\r');
+        while (USART_GetFlagStatus(pUSARTx, USART_FLAG_TXE) == RESET)
+            ;
+    }
+    USART_SendData(pUSARTx, (uint8_t)ch);
+    while (USART_GetFlagStatus(pUSARTx, USART_FLAG_TXE) == RESET)
+        ;
+
+    return ch;
 }
 
+/**
+ * @brief   Redirect scanf -> UART
+ */
 #define GETCHAR_PROTOTYPE int fgetc(FILE *f)
 
 GETCHAR_PROTOTYPE
 {
-	(void)f;
-	
-	while (!USART_Available());
-	
-	return (int)USART_GetChar();
+    (void)f;
+
+    while (!USART_Available())
+        ;
+
+    return (int)USART_GetChar();
 }
